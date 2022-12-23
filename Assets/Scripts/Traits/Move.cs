@@ -20,7 +20,7 @@ public class Move : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         rigidbody = GetComponent<Rigidbody>();
 
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
     }
 
     // Update is called once per frame

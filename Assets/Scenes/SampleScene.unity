@@ -773,7 +773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdArea: {fileID: 1522855922}
-  pickupRange: 5
+  pickupRange: 2
   pickupForce: 150
   onInteractionHoverChange: {fileID: 11400000, guid: 384bb32a9c93dc445a90bcaee87378dd, type: 2}
 --- !u!1 &1118138647

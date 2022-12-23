@@ -45,7 +45,7 @@ public class Interact : MonoBehaviour
             return;
         }
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, 5f, LayerMask.GetMask("Interactable")))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, pickupRange, LayerMask.GetMask("Interactable")))
             PickupObject(hitInfo.collider.gameObject);
     }
 
