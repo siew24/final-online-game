@@ -1,22 +1,40 @@
+using System.Collections.Generic;
+using cakeslice;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(InteractableInViewListener),
+                  typeof(InteractableNotInViewListener))]
 public class Interact : MonoBehaviour
 {
     [SerializeField] Transform holdArea;
 
-    [SerializeField] float pickupRange = 5.0f;
+    [SerializeField] float pickupMaxRange = 10.0f;
     [SerializeField] float pickupForce = 75.0f;
 
     [SerializeField] OnInteractionHoverChange onInteractionHoverChange;
 
+    InteractableInViewListener interactableInViewListener;
+    InteractableNotInViewListener interactableNotInViewListener;
+
     GameObject heldObject = null;
     Rigidbody heldObjectRigidbody = null;
 
+    LookListener lookListener;
+
+    List<GameObject> interactables;
+    GameObject targetedInteractable;
 
     // Start is called before the first frame update
     void Start()
     {
+        interactables = new();
+
+        interactableInViewListener = GetComponent<InteractableInViewListener>();
+        interactableInViewListener.Register(AddInteractable);
+
+        interactableNotInViewListener = GetComponent<InteractableNotInViewListener>();
+        interactableNotInViewListener.Register(RemoveInteractable);
     }
 
     // Update is called once per frame
@@ -24,12 +42,37 @@ public class Interact : MonoBehaviour
     {
         if (heldObject == null)
         {
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, pickupRange, LayerMask.GetMask("Interactable")))
+            if (targetedInteractable != null)
             {
+                Destroy(targetedInteractable.GetComponent<Outline>());
+                targetedInteractable = null;
+            }
+
+            if (interactables.Count == 0)
+                return;
+
+            GameObject bestTarget = null;
+            float minimumAngle = float.MaxValue;
+            foreach (GameObject interactable in interactables)
+            {
+                float angle = Vector3.Angle(Camera.main.transform.forward, interactable.transform.position - transform.position);
+
+                Debug.Log($"{interactable.name} has an angle of {angle}");
+
+                if (angle < minimumAngle)
+                {
+                    minimumAngle = angle;
+                    bestTarget = interactable;
+                }
+
                 onInteractionHoverChange.Raise(true);
             }
-            else
-                onInteractionHoverChange.Raise(false);
+
+            if (bestTarget != null)
+            {
+                bestTarget.AddComponent<Outline>();
+                targetedInteractable = bestTarget;
+            }
 
             return;
         }
@@ -45,8 +88,7 @@ public class Interact : MonoBehaviour
             return;
         }
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hitInfo, pickupRange, LayerMask.GetMask("Interactable")))
-            PickupObject(hitInfo.collider.gameObject);
+        PickupObject(targetedInteractable);
     }
 
     void PickupObject(GameObject target)
@@ -83,5 +125,29 @@ public class Interact : MonoBehaviour
         heldObject.GetComponent<Interactable>().ResetInHierachy();
 
         heldObject = null;
+    }
+
+    void OnScroll(InputValue inputValue)
+    {
+        // Value received is either -120 (Scroll Down), 120 (Scroll Up)
+        float value = inputValue.Get<float>() / 120;
+
+        Debug.Log(value);
+    }
+
+    void AddInteractable(GameObject interactable)
+    {
+        interactables.Add(interactable);
+    }
+
+    void RemoveInteractable(GameObject interactable)
+    {
+        interactables.Remove(interactable);
+
+        if (targetedInteractable == interactable)
+        {
+            Destroy(targetedInteractable.GetComponent<Outline>());
+            targetedInteractable = null;
+        }
     }
 }

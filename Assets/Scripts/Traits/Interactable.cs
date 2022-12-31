@@ -5,6 +5,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Interactable : MonoBehaviour
 {
+    [SerializeField] OnInteractableInView onInteractableInView;
+    [SerializeField] OnInteractableNotInView onInteractableNotInView;
+
+    new Camera camera;
+    new Collider collider;
+
+    LookListener lookListener;
+
     string uniqueId;
 
     GameObject originalParent;
@@ -21,11 +29,24 @@ public class Interactable : MonoBehaviour
         }
 
         uniqueId += $"/{name}";
+
+        camera = Camera.main;
+        collider = GetComponent<Collider>();
     }
 
     // Update is called once per frame
     void Update()
     {
+    }
+
+    void OnBecameVisible()
+    {
+        onInteractableInView.Raise(gameObject);
+    }
+
+    void OnBecameInvisible()
+    {
+        onInteractableNotInView.Raise(gameObject);
     }
 
     #region Public Methods
