@@ -10,15 +10,23 @@ public class Move : MonoBehaviour
     [SerializeField] Transform followTransform;
 
     [SerializeField] int speed;
+    [SerializeField] int runSpeed;
+    [SerializeField] int jumpVelocity;
     [SerializeField] float pushPower;
     [SerializeField] float turnSmoothTime = 0.1f;
 
     float turnSmoothVelocity;
+    float previousYVelocity;
+
+    float groundedGravity = .5f;
 
     PlayerInput playerInput;
     CharacterController characterController;
 
     Vector2 _move;
+    bool isJumping;
+    bool isJumpPressed;
+    bool isRunPressed;
 
     // Start is called before the first frame update
     void Start()
@@ -26,25 +34,13 @@ public class Move : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         characterController = GetComponent<CharacterController>();
 
+        isJumping = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*
-        Vector2 direction = playerInput.actions["Move"].ReadValue<Vector2>();
-        float horizontalInput = direction.x;
-        float verticalInput = direction.y;
 
-        if (direction.magnitude >= 0.1f)
-        {
-            float targetAngle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-
-            Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            characterController.Move(moveDirection.normalized * speed * Time.deltaTime);
-        }
-        */
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
 
@@ -58,12 +54,28 @@ public class Move : MonoBehaviour
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-        characterController.Move(moveDirection * speed * Time.deltaTime);
+        moveDirection += Physics.gravity;
+
+        if (!isRunPressed)
+            characterController.Move(moveDirection * speed * Time.deltaTime);
+        else
+            characterController.Move(moveDirection * runSpeed * Time.deltaTime);
     }
 
     void OnMove(InputValue inputValue)
     {
         _move = inputValue.Get<Vector2>();
+
+    }
+
+    void OnJump(InputValue inputValue)
+    {
+        isJumpPressed = true;
+    }
+
+    void OnRun(InputValue inputValue)
+    {
+        isRunPressed = inputValue.Get<float>() > 0;
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
