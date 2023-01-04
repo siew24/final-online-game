@@ -1,0 +1,1 @@
+public class HintCollectedListener : BaseEventListener<string> { }

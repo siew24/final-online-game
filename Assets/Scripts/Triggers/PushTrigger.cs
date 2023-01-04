@@ -4,7 +4,8 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-public class PushTrigger : MonoBehaviour {
+public class PushTrigger : MonoBehaviour
+{
 
     // Public vars
     [Header("[Source]")]
@@ -16,12 +17,12 @@ public class PushTrigger : MonoBehaviour {
     public bool auto = false;
     [Header("[Movement Settings]")]
     public Vector3 XYZDisplacement;
-    public Quaternion Rotation = new Quaternion(0f,90f,0f,100f);
+    public Quaternion Rotation = new Quaternion(0f, 90f, 0f, 100f);
     public float Duration;
     [Range(0, 100)]
 
 
- 
+
 
     // Private vars
     [HideInInspector]
@@ -33,13 +34,14 @@ public class PushTrigger : MonoBehaviour {
     private float _percentage = 0;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         // make this object invisible
         this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         if (opened)
         {
             DoorHinge.transform.localPosition = XYZDisplacement;
-      //      DoorHinge.rotation= new Quaternion(Rotation.x, Rotation.y,Rotation.z, Rotation.w);
+            //      DoorHinge.rotation= new Quaternion(Rotation.x, Rotation.y,Rotation.z, Rotation.w);
             _percentage = 100;
         }
     }
@@ -47,11 +49,7 @@ public class PushTrigger : MonoBehaviour {
     // When any collider hits the trigger.
     void OnTriggerEnter(Collider trig)
     {
-        // get player collider
-        _activator = ManagerScript.PlayerCollider;
-        //Debug.Log(trig.name + "has entered the door trigger");
-        // check if Key pressed and collider hit was from correct target
-        if (trig.GetComponent<Collider>() == _activator)
+        if (trig.CompareTag("Player"))
         {
             // set the door ready to move
             _iscolliding = true;
@@ -66,12 +64,13 @@ public class PushTrigger : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-        // check if ready to move
-        if (_iscolliding)
+    void Update()
+    {
+        // check if ready to move and not moving and not opened 
+        if (_iscolliding && !_ismoving && !opened)
         {
-                // get unlock key code
-                UnlockKey = ManagerScript.DoorKeyCode;
+            // get unlock key code
+            UnlockKey = ManagerScript.DoorKeyCode;
             // Set movement on when Key pressed
             if (Input.GetKey(UnlockKey) || (auto))
             {
@@ -79,6 +78,12 @@ public class PushTrigger : MonoBehaviour {
                 Debug.Log("Door Unlocked");
             }
         }
+        else if (!_iscolliding && !_ismoving && opened)
+        {
+            _ismoving = true;
+            Debug.Log("Door is locking");
+        }
+
         if (_ismoving)
         {
             // Get time updated and fixed
@@ -86,11 +91,11 @@ public class PushTrigger : MonoBehaviour {
 
             //set percentage of movement done
             if (!opened)
-            _percentage = (_timer / Duration);
+                _percentage = (_timer / Duration);
             else
-            _percentage = (1-(_timer / Duration));
+                _percentage = (1 - (_timer / Duration));
             // debug
-           // Debug.Log("Movement done: " + (_percentage * 100) + "%");
+            // Debug.Log("Movement done: " + (_percentage * 100) + "%");
 
             //stop movement when time is over.
             if (_percentage > (Percentage * 0.01f))
@@ -102,8 +107,7 @@ public class PushTrigger : MonoBehaviour {
                 // debug
                 Debug.Log("Door Opened");
             }
-            else
-                if (_percentage < 0f)
+            else if (_percentage < 0f)
             {
                 _ismoving = false;
                 _percentage = 0;
@@ -113,12 +117,12 @@ public class PushTrigger : MonoBehaviour {
                 Debug.Log("Door Closed");
             }
             // Move position
-            DoorHinge.transform.localPosition = (_percentage * XYZDisplacement );
+            DoorHinge.transform.localPosition = (_percentage * XYZDisplacement);
             // Rotate
             DoorHinge.transform.localRotation = new Quaternion(Rotation.x * _percentage, Rotation.y * _percentage, Rotation.z * _percentage, Rotation.w);
 
             //debug
-            Debug.Log(DoorHinge + " is moved: " + (XYZDisplacement  * _percentage) + "and rotated: " + (Rotation) + " degrees from original position");
+            Debug.Log(DoorHinge + " is moved: " + (XYZDisplacement * _percentage) + "and rotated: " + (Rotation) + " degrees from original position");
         }
 
     }

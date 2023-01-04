@@ -57,8 +57,6 @@ public class Interact : MonoBehaviour
             {
                 float angle = Vector3.Angle(Camera.main.transform.forward, interactable.transform.position - transform.position);
 
-                Debug.Log($"{interactable.name} has an angle of {angle}");
-
                 if (angle < minimumAngle)
                 {
                     minimumAngle = angle;
