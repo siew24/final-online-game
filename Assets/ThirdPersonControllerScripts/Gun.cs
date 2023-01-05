@@ -63,7 +63,7 @@ public class Gun : MonoBehaviour
                 if (hit.collider.CompareTag("Enemy"))
                 {
                     Debug.Log(hit.collider.name);
-                    hit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
+                    hit.collider.GetComponent<AIEnemyHealth>().TakeDamage(damage);
                 }
 
             }
