@@ -2,14 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(InteractionHoverChangeListener), typeof(OnHintsTriggerListener))]
+[RequireComponent(typeof(InteractionHoverChangeListener))]
 public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject tooltip;
 
     InteractionHoverChangeListener interactionHoverChangeListener;
-
-    OnHintsTriggerListener onHintsTriggerListener;
 
     // Reference to the player character
     public GameObject player;
@@ -25,8 +23,6 @@ public class UIManager : MonoBehaviour
         interactionHoverChangeListener = GetComponent<InteractionHoverChangeListener>();
         interactionHoverChangeListener.Register(ToggleInteractPrompt);
 
-        onHintsTriggerListener = GetComponent<OnHintsTriggerListener>();
-        onHintsTriggerListener.Register(TriggerHints);
     }
 
     // Update is called once per frame
@@ -38,12 +34,6 @@ public class UIManager : MonoBehaviour
     void ToggleInteractPrompt(bool value)
     {
         tooltip.SetActive(value);
-    }
-
-    public void TriggerHints()
-    {
-        UI.SetActive(true);
-        //player.GetComponent<PlayerMovement>().isLocked = true;
     }
 
 }
