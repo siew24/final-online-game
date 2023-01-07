@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class AnimateGOTrigger : MonoBehaviour
+public class AnimateGOTrigger : MonoBehaviourPun
 {
+    new PhotonView photonView;
+
     // Public vars
     [Header("[Source]")]
-    public TownManager ManagerScript;
     public GameObject GoTarget;
 
     [Header("[AnimGO Settings]")]
     public bool Locked = false;
     public bool AutoAnim = false;
+
+    [Header("Events")]
+    public OnNotification onNotification;
 
     // Private vars
     [HideInInspector]
@@ -20,6 +25,11 @@ public class AnimateGOTrigger : MonoBehaviour
     private bool _iscolliding = false;
     [HideInInspector]
     public Animator animator;
+
+    void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
 
     // Use this for initialization
     void Start()
@@ -35,14 +45,16 @@ public class AnimateGOTrigger : MonoBehaviour
     // When any collider hits the trigger.
     void OnTriggerEnter(Collider trig)
     {
-        // get player collider
-        _activator = ManagerScript.PlayerCollider;
-        Debug.Log(trig.name + "has entered the activator trigger");
         // check if Key pressed and collider hit was from correct target
-        if (trig.GetComponent<Collider>() == _activator)
+        if (trig.CompareTag("Player"))
         {
             // set the door ready to move
+            //photonView.RPC(nameof(NetworkedSetIsColliding), RpcTarget.AllBuffered, true);
             _iscolliding = true;
+
+            // If door can't be moved
+            if (Locked)
+                onNotification.Raise("Door Locked. Explore more");
         }
         // AUTOANIM
         if (AutoAnim && (!Locked))
@@ -72,8 +84,6 @@ public class AnimateGOTrigger : MonoBehaviour
         // check if ready to move
         if (_iscolliding)
         {
-            // get unlock key code
-            UnlockKey = ManagerScript.DoorKeyCode;
             // Set movement on when Key pressed
             if ((Input.GetKeyUp(UnlockKey)) && (!Locked) && (!AutoAnim))
             {
@@ -88,5 +98,23 @@ public class AnimateGOTrigger : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetDoorLock(bool value)
+    {
+        //photonView.RPC(nameof(NetworkedSetDoorLock), RpcTarget.AllBuffered, value);
+        Locked = value;
+    }
+
+    [PunRPC]
+    void NetworkedSetDoorLock(bool value)
+    {
+        Locked = value;
+    }
+
+    [PunRPC]
+    void NetworkedSetIsColliding(bool value)
+    {
+        _iscolliding = value;
     }
 }

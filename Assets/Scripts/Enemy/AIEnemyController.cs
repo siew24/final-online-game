@@ -1,23 +1,21 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+using Photon.Pun;
+
 [RequireComponent(typeof(GameStartListener))]
-public class AIEnemyController : MonoBehaviour
+public class AIEnemyController : MonoBehaviourPun
 {
+    new PhotonView photonView;
+
     [SerializeField] NavMeshAgent agent;
 
     // Speed at which the AI enemy moves
     public float speed = 2f;
-    // List of waypoints for the AI enemy to patrol
-    public Transform[] waypoints;
-    // Index of the current waypoint the AI enemy is moving towards
-    int currentWaypointIndex = 0;
     // Flag to indicate whether the AI enemy is attacking the player
     bool isAttacking = false;
     // Range at which the AI enemy will chase the player
     public float chaseRange = 10f;
-    // Timer to delay the AI enemy's movement to the next waypoint
-    float waypointTimer = 0f;
     // Reference to the player game object
     // Particle system for the muzzle flash
     public ParticleSystem muzzleFlash;
@@ -41,8 +39,15 @@ public class AIEnemyController : MonoBehaviour
     private GameObject[] players;
     private GameObject targetedPlayer;
 
+    void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
+
     void Start()
     {
+        gameObject.layer = LayerMask.NameToLayer("Shootable");
+
         _isGameStarted = false;
         gameStartListener = GetComponent<GameStartListener>();
         gameStartListener.Register(OnGameStart);
@@ -51,6 +56,9 @@ public class AIEnemyController : MonoBehaviour
 
     void Update()
     {
+        if (!photonView.IsMine)
+            return;
+
         if (!_isGameStarted)
             return;
 
@@ -79,49 +87,29 @@ public class AIEnemyController : MonoBehaviour
 
     void HandleIdle()
     {
-        // Calculate the distance to the player
-        float distanceToPlayer = Vector3.Distance(transform.position, targetedPlayer.transform.position);
+        float minDistance = float.MaxValue;
+
+        foreach (GameObject player in players)
+        {
+            // Calculate the distance to the player
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+            if (distanceToPlayer < minDistance)
+            {
+                targetedPlayer = player;
+                minDistance = distanceToPlayer;
+            }
+        }
 
         // If the player is within the chase range, start chasing the player
-        if (distanceToPlayer < chaseRange)
+        if (Vector3.Distance(transform.position, targetedPlayer.transform.position) < chaseRange)
         {
             isAttacking = true;
             // Move towards the player
             agent.SetDestination(targetedPlayer.transform.position);
-            // Reset the waypoint timer
-            waypointTimer = 0f;
             // Reset the attack timer
             attackTimer = 5f;
-        }
-        else
-        {
-            // Decrement the waypoint timer
-            waypointTimer -= Time.deltaTime;
-
-            if (waypointTimer <= 0)
-            {
-                // Calculate the distance to the current waypoint
-                float distanceToWaypoint = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].position);
-
-                // If the AI enemy is close to the waypoint, move to the next waypoint
-                if (distanceToWaypoint < 1.5f)
-                {
-                    currentWaypointIndex++;
-                    if (currentWaypointIndex >= waypoints.Length)
-                    {
-                        currentWaypointIndex = 0;
-                    }
-                    // Reset the waypoint timer
-                    //waypointTimer = 1f;
-                }
-
-                // Look at the current waypoint
-                //transform.LookAt(waypoints[currentWaypointIndex].position);
-
-                // Set the destination to the current waypoint
-                agent.SetDestination(waypoints[currentWaypointIndex].position);
-
-            }
+            return;
         }
     }
 
@@ -135,7 +123,7 @@ public class AIEnemyController : MonoBehaviour
         // Raycast from the shooting point to the player
         RaycastHit hit;
 
-        Vector3 playerPos = targetedPlayer.transform.position;
+        Vector3 playerPos = targetedPlayer.transform.position + new Vector3(0f, 1f, 0f);
         Vector3 raycastOrigin = transform.position;
         Vector3 direction = playerPos - raycastOrigin;
 

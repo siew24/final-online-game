@@ -2,24 +2,43 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LightFx00
-  m_Shader: {fileID: 210, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: EFFECT_BUMP _ALPHABLEND_ON _EMISSION _FADING_ON _NORMALMAP
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _ALPHABLEND_ON
+  - _ALPHAPREMULTIPLY_ON
+  - _EMISSION
+  - _NORMALMAP
+  m_InvalidKeywords:
+  - EFFECT_BUMP
+  - _DISTORTION_ON
+  - _FADING_ON
+  - _FLIPBOOKBLENDING_OFF
+  - _SOFTPARTICLES_ON
+  - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
-  disabledShaderPasses: []
+  m_DoubleSidedGI: 1
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - DepthOnly
+  - SHADOWCASTER
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 960834824f6884a4a9dccaa464ac8bd4, type: 3}
+        m_Scale: {x: 6, y: 6}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 4c8f4e64e02cc5b4085d25600ec7aea7, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -29,7 +48,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailMask:
-        m_Texture: {fileID: 2800000, guid: 48cda19b2f56503498eb8fc7f69be410, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
@@ -80,7 +99,11 @@ Material:
         m_Texture: {fileID: 2800000, guid: 2246e378b5e5d8745bedf1b9035346c5, type: 3}
         m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
+    - _AlphaClip: 0
+    - _Blend: 2
+    - _BlendModePreserveSpecular: 1
     - _BlendOp: 0
     - _BumpScale: 2
     - _BumpSmooth: 1.1
@@ -97,7 +120,9 @@ Material:
     - _DistortionStrength: 6.4
     - _DistortionStrengthScaled: 0.64000005
     - _DstBlend: 1
+    - _DstBlendAlpha: 1
     - _EmissionEnabled: 1
+    - _FlipbookBlending: 0
     - _FlipbookMode: 0
     - _Gloss: 0.75
     - _GlossMapScale: 0.613
@@ -112,14 +137,19 @@ Material:
     - _OcclusionStrength: 1
     - _Opacity: -0.06
     - _Parallax: 0.02
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Refraction: 1
     - _SecondaryGloss: 0.46
+    - _Smoothness: 0.728
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 1
     - _SoftParticlesFarFadeDistance: 1
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 1
     - _UVSec: 0
     - _UseMainTexAlpha: 0
     - _VelocityA: 0.02
@@ -128,6 +158,8 @@ Material:
     - _VelocityY: 1
     - _ZWrite: 0
     m_Colors:
+    - _BaseColor: {r: 0.8126123, g: 0.7783019, b: 1, a: 1}
+    - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 1, g: 1, b: 0, a: 0}
     - _Color: {r: 0.8126123, g: 0.7783019, b: 1, a: 1}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
@@ -135,3 +167,4 @@ Material:
     - _MainColor: {r: 0.5147059, g: 0.63853925, b: 1, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 1, b: 0, a: 0}
     - _TintColor: {r: 0.514151, g: 0.5572503, b: 1, a: 0.5}
+  m_BuildTextureStacks: []

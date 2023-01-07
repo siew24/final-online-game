@@ -3,34 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AIEnemyHealth : MonoBehaviour
+using Photon.Pun;
+
+public class AIEnemyHealth : MonoBehaviour//Pun
 {
-    /*public int health = 100;
-    public EnemyDamagedListener enemyDamagedListener;
-    public EnemyDamaged enemyDamaged;
-    [SerializeField] int damage = 10;
-
-    private void Start()
-    {
-        // Create an instance of the OnPlayerDetectedListener event listener
-        enemyDamagedListener = gameObject.AddComponent<EnemyDamagedListener>();
-        // Register the AttackPlayer method as the UnityAction for the event listener
-        enemyDamagedListener.Register(Damage);
-
-    }
-
-    void Damage()
-    {
-        // Reduce the enemy's health by 10 when the event is triggered
-        health -= damage;
-        // Raise the EnemyDamaged event, passing the amount of damage as an argument
-        enemyDamaged.Raise(damage);
-    }*/
+    //new PhotonView photonView;
 
     public Slider healthSlider;
     public float maxHealth = 100f;
     public float currentHealth;
     public float damage = 20f;
+
+    void Awake()
+    {
+        //photonView = GetComponent<PhotonView>();
+    }
 
     void Start()
     {
@@ -40,18 +27,15 @@ public class AIEnemyHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        currentHealth -= damage;
-        UpdateHealthSlider();
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        //photonView.RPC(nameof(NetworkedTakeDamage), RpcTarget.AllBuffered, damage);
+        NetworkedTakeDamage(damage, new());
     }
 
     public void Die()
     {
         // Trigger death animation or effect
-        Destroy(gameObject);
+        //photonView.RPC(nameof(NetworkedDie), RpcTarget.AllBuffered);
+        NetworkedDie(new());
     }
 
     public void Attack(GameObject target)
@@ -64,5 +48,25 @@ public class AIEnemyHealth : MonoBehaviour
     {
         float healthPercent = currentHealth / maxHealth;
         healthSlider.value = healthPercent;
+    }
+
+    [PunRPC]
+    void NetworkedTakeDamage(float damage, PhotonMessageInfo photonMessageInfo)
+    {
+        Debug.Log($"{photonMessageInfo.SentServerTime}: Hit {gameObject.name} with {damage}.");
+
+        currentHealth -= damage;
+        UpdateHealthSlider();
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    [PunRPC]
+    void NetworkedDie(PhotonMessageInfo photonMessageInfo)
+    {
+        Debug.Log($"{photonMessageInfo.SentServerTime}: Destroyed {gameObject.name}.");
+        Destroy(gameObject);
     }
 }

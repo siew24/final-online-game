@@ -1,15 +1,16 @@
 ﻿// TOPDOWN CONTROL SCRIPTS 1.0 www.dlnkworks.com 2016(c) This script is licensed as free content in the pack. Support is not granted while this is not part of the art pack core. Is licensed for commercial purposes while not for resell.
 
 using UnityEngine;
-using System.Collections;
-using System;
 
-public class PushTrigger : MonoBehaviour
+using Photon.Pun;
+
+// TODO: Attach PhotonView on all PushTriggers for Pun.RPC
+public class PushTrigger : MonoBehaviour//Pun
 {
+    //new PhotonView photonView;
 
     // Public vars
     [Header("[Source]")]
-    public TownManager ManagerScript;
     public Transform DoorHinge;
     [Header("[Door Settings]")]
     public bool opened;
@@ -19,23 +20,31 @@ public class PushTrigger : MonoBehaviour
     public Vector3 XYZDisplacement;
     public Quaternion Rotation = new Quaternion(0f, 90f, 0f, 100f);
     public float Duration;
-    [Range(0, 100)]
-
+    [Header("[Area Door Settings]")]
+    public bool isAreaDoor = false;
+    public OnNotification onNotification;
 
 
 
     // Private vars
     [HideInInspector]
-    public KeyCode UnlockKey;
-    private Collider _activator;
-    private float _timer = 0;
     private bool _iscolliding = false;
     private bool _ismoving = false;
+    private bool _islocked = false;
+    private Collider _activator;
     private float _percentage = 0;
+    private float _timer = 0;
+
+    void Awake()
+    {
+        //photonView = GetComponent<PhotonView>();
+    }
 
     // Use this for initialization
     void Start()
     {
+        _islocked = isAreaDoor;
+
         // make this object invisible
         this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         if (opened)
@@ -52,7 +61,10 @@ public class PushTrigger : MonoBehaviour
         if (trig.CompareTag("Player"))
         {
             // set the door ready to move
-            _iscolliding = true;
+            SetIsColliding(true);
+
+            if (_islocked)
+                onNotification.Raise("Door Locked. Explore more");
         }
     }
     void OnTriggerExit(Collider trig)
@@ -69,10 +81,7 @@ public class PushTrigger : MonoBehaviour
         // check if ready to move and not moving and not opened 
         if (_iscolliding && !_ismoving && !opened)
         {
-            // get unlock key code
-            UnlockKey = ManagerScript.DoorKeyCode;
-            // Set movement on when Key pressed
-            if (Input.GetKey(UnlockKey) || (auto))
+            if (!_islocked)
             {
                 _ismoving = true;
                 Debug.Log("Door Unlocked");
@@ -125,5 +134,31 @@ public class PushTrigger : MonoBehaviour
             Debug.Log(DoorHinge + " is moved: " + (XYZDisplacement * _percentage) + "and rotated: " + (Rotation) + " degrees from original position");
         }
 
+    }
+
+    public void SetDoorLock(bool value)
+    {
+        //photonView.RPC(nameof(NetworkedIsLocked), RpcTarget.AllBuffered, value);
+        _iscolliding = value;
+    }
+
+    void SetIsColliding(bool value)
+    {
+        //photonView.RPC(nameof(NetworkedIsColliding), RpcTarget.AllBuffered, value);
+        _islocked = value;
+    }
+
+    [PunRPC]
+    void NetworkedIsLocked(bool value, PhotonMessageInfo photonMessageInfo)
+    {
+        Debug.Log($"{photonMessageInfo.SentServerTime}: Set _islocked for {gameObject.name} to {value}");
+        _islocked = value;
+    }
+
+    [PunRPC]
+    void NetworkedIsColliding(bool value, PhotonMessageInfo photonMessageInfo)
+    {
+        Debug.Log($"{photonMessageInfo.SentServerTime}: Set _iscolliding for {gameObject.name} to {value}");
+        _iscolliding = value;
     }
 }

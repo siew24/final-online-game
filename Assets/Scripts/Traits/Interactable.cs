@@ -1,12 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-[RequireComponent(typeof(Rigidbody))]
+public enum InteractionType
+{
+    Grabable,
+    Trigger,
+    Hold
+}
+
 public class Interactable : MonoBehaviour
 {
+    [SerializeField]
+    InteractionType interactionType;
+
+    [Header("Grabable Interaction Events (Requires Rigidbody and InteractionType.Grabable)")]
     [SerializeField] OnInteractableInView onInteractableInView;
     [SerializeField] OnInteractableNotInView onInteractableNotInView;
+
+    [Header("Trigger Interaction Events")]
+    public UnityEvent onInteractionTrigger;
+
+    [Header("Hold Interaction Event")]
+    public UnityEvent<int, bool> onInteractionHold;
 
     new Camera camera;
     new Collider collider;
@@ -16,6 +33,11 @@ public class Interactable : MonoBehaviour
     string uniqueId;
 
     GameObject originalParent;
+
+    // Getters and Setters
+    public InteractionType InteractionType { get { return interactionType; } set { interactionType = value; } }
+
+    #region Unity Methods
 
     // Start is called before the first frame update
     void Start()
@@ -41,13 +63,17 @@ public class Interactable : MonoBehaviour
 
     void OnBecameVisible()
     {
-        onInteractableInView.Raise(gameObject);
+        if (enabled)
+            onInteractableInView.Raise(gameObject);
     }
 
     void OnBecameInvisible()
     {
-        onInteractableNotInView.Raise(gameObject);
+        if (enabled)
+            onInteractableNotInView.Raise(gameObject);
     }
+
+    #endregion
 
     #region Public Methods
     public string GetUniqueId()
@@ -64,6 +90,18 @@ public class Interactable : MonoBehaviour
         }
 
         transform.parent = null;
+    }
+
+    public void Trigger()
+    {
+        onInteractionTrigger.Invoke();
+        // TODO: Also invoke event in all clients
+    }
+
+    public void Hold(int actorID, bool value)
+    {
+        onInteractionHold.Invoke(actorID, value);
+        // TODO: Also invoke event in all clients
     }
     #endregion
 }

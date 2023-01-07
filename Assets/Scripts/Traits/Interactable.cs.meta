@@ -3,7 +3,9 @@ guid: 8d51d9ac4fdaf7c43b2cd62ef80ac04b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - onInteractableInView: {fileID: 11400000, guid: ec00b1ce82524b047a09c23f67c7fb98, type: 2}
+  - onInteractableNotInView: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
