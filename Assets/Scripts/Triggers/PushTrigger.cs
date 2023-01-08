@@ -139,13 +139,13 @@ public class PushTrigger : MonoBehaviour//Pun
     public void SetDoorLock(bool value)
     {
         //photonView.RPC(nameof(NetworkedIsLocked), RpcTarget.AllBuffered, value);
-        _iscolliding = value;
+        _islocked = value;
     }
 
     void SetIsColliding(bool value)
     {
         //photonView.RPC(nameof(NetworkedIsColliding), RpcTarget.AllBuffered, value);
-        _islocked = value;
+        _iscolliding = value;
     }
 
     [PunRPC]

@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(InteractionHoverChangeListener))]
 [RequireComponent(typeof(GameStartListener),
                   typeof(GameSuspendListener),
                   typeof(GameEndListener))]
-[RequireComponent(typeof(NotificationListener))]
+[RequireComponent(typeof(NotificationListener),
+                  typeof(PlayerHealthChangeListener),
+                  typeof(GunAmmoChangeListener))]
 public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject tooltip;
@@ -16,7 +20,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMPro.TextMeshProUGUI goalText;
     [SerializeField] GameObject pausePanel;
     [SerializeField] GameObject endPanel;
+    [SerializeField] GameObject diedPanel;
     [SerializeField] GameObject hintPanel;
+    [SerializeField] Image healthImage;
+    [SerializeField] Sprite[] healthSprites;
+    [SerializeField] TMPro.TextMeshProUGUI ammoText;
 
     // Listeners
     GameStartListener gameStartListener;
@@ -24,12 +32,8 @@ public class UIManager : MonoBehaviour
     GameEndListener gameEndListener;
     InteractionHoverChangeListener interactionHoverChangeListener;
     NotificationListener notificationListener;
-
-    // Reference to the player character
-    public GameObject player;
-
-    // Reference to the UI game object
-    public GameObject UI;
+    PlayerHealthChangeListener playerHealthChangeListener;
+    GunAmmoChangeListener gunAmmoChangeListener;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +43,7 @@ public class UIManager : MonoBehaviour
         hudPanel.SetActive(false);
         pausePanel.SetActive(false);
         endPanel.SetActive(false);
+        diedPanel.SetActive(false);
         notificationText.gameObject.SetActive(false);
         goalText.gameObject.SetActive(true);
 
@@ -58,6 +63,26 @@ public class UIManager : MonoBehaviour
 
         Utils.GetListener(this, out notificationListener);
         notificationListener.Register(ShowNotification);
+
+        Utils.GetListener(this, out playerHealthChangeListener);
+        playerHealthChangeListener.Register((int value) =>
+        {
+            ChangeHealthBar(value);
+
+            if (value <= 0)
+            {
+                gameSuspendListener.baseEvent.Raise(true);
+
+                loadingPanel.SetActive(false);
+                hudPanel.SetActive(false);
+                pausePanel.SetActive(false);
+                endPanel.SetActive(false);
+                diedPanel.SetActive(true);
+            }
+        });
+
+        Utils.GetListener(this, out gunAmmoChangeListener);
+        gunAmmoChangeListener.Register(UpdateAmmoText);
     }
 
     // Update is called once per frame
@@ -174,6 +199,18 @@ public class UIManager : MonoBehaviour
         hudPanel.SetActive(!value);
         pausePanel.SetActive(!value);
         endPanel.SetActive(value);
+    }
+
+    void ChangeHealthBar(int value)
+    {
+        value = Math.Clamp(value, 0, 10);
+
+        healthImage.sprite = healthSprites[value];
+    }
+
+    void UpdateAmmoText((int, int) ratio)
+    {
+        ammoText.text = $"{ratio.Item1} / {ratio.Item2}";
     }
 
     public void ContinueToExplore()

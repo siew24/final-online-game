@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _ALPHABLEND_ON
+  - _ALPHAPREMULTIPLY_ON
   - _EMISSION
   - _NORMALMAP
   m_InvalidKeywords:
@@ -23,8 +23,9 @@ Material:
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses:
   - DepthOnly
   - SHADOWCASTER
@@ -115,7 +116,7 @@ Material:
     - _DistortionEnabled: 1
     - _DistortionStrength: 52.43
     - _DistortionStrengthScaled: 5.243
-    - _DstBlend: 1
+    - _DstBlend: 10
     - _EmissionEnabled: 0
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
@@ -128,7 +129,7 @@ Material:
     - _LightingEnabled: 0
     - _Maskmult: 0.5
     - _Metallic: 0.717
-    - _Mode: 4
+    - _Mode: 3
     - _OcclusionStrength: 1
     - _Opacity: -0.06
     - _Parallax: 0.02
@@ -140,7 +141,7 @@ Material:
     - _SoftParticlesFarFadeDistance: 1
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _Surface: 1
     - _UVSec: 0
     - _UseMainTexAlpha: 0

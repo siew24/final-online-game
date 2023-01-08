@@ -170,7 +170,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        if (scene.name == "GameLevel" && !PhotonNetwork.IsMasterClient)
+        if (scene.name == "GameLevel")
         {
             // PhotonNetwork.IsMessageQueueRunning = true;
             onGameStart.Raise();

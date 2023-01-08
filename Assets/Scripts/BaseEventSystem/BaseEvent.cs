@@ -29,7 +29,7 @@ public class BaseEvent : ScriptableObject
         if (networked)
         {
             RaiseEventOptions raiseEventOptions = new() { Receivers = ReceiverGroup.All };
-            PhotonNetwork.RaiseEvent((byte)eventCode, null, raiseEventOptions, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent((byte)eventCode, null, raiseEventOptions, SendOptions.SendUnreliable);
             return;
         }
 

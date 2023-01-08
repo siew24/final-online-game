@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using cakeslice;
+using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -339,7 +340,7 @@ public class Interact : MonoBehaviour
         if (targetedInteractable.GetComponent<Interactable>().InteractionType == InteractionType.Hold)
         {
             // TODO: We should also pass the Actor ID here to recognize two players
-            targetedInteractable.GetComponent<Interactable>().Hold(0, pressedDown);
+            targetedInteractable.GetComponent<Interactable>().Hold(PhotonNetwork.LocalPlayer.ActorNumber, pressedDown);
             if (pressedDown)
             {
                 heldObject = targetedInteractable;

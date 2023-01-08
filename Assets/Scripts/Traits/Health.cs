@@ -11,11 +11,14 @@ public class Health : MonoBehaviour//Pun
     public Slider healthSlider;
     public float maxHealth = 100f;
     public float currentHealth;
-    public float damage = 20f;
 
     [Header("Boss")]
     public bool isBoss = false;
     public OnBossDied onBossDied;
+
+    [Header("Player")]
+    public bool isPlayer = false;
+    public OnPlayerHealthChange onPlayerHealthChange;
 
     Animator animator;
 
@@ -26,9 +29,9 @@ public class Health : MonoBehaviour//Pun
 
     void Start()
     {
-
         currentHealth = maxHealth;
         UpdateHealthSlider();
+        onPlayerHealthChange.Raise((int)currentHealth);
     }
 
     public void TakeDamage(float damage)
@@ -38,6 +41,8 @@ public class Health : MonoBehaviour//Pun
 
         currentHealth -= damage;
         UpdateHealthSlider();
+        onPlayerHealthChange.Raise((int)currentHealth);
+
         if (currentHealth <= 0)
         {
             if (isBoss)

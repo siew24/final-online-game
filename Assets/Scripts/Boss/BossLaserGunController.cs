@@ -2,11 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BossDiedListener))]
 public class BossLaserGunController : MonoBehaviour
 {
     [SerializeField] GameObject[] laserPoints;
     [SerializeField] Material lineMaterial;
     [SerializeField] float turnSpeed;
+    [SerializeField] float turnIncrement;
+    [SerializeField] float damage;
+
+    BossDiedListener bossDiedListener;
+    Animator animator;
 
     bool _canDrawLaser;
 
@@ -14,6 +20,9 @@ public class BossLaserGunController : MonoBehaviour
     void Start()
     {
         _canDrawLaser = false;
+
+        Utils.GetListener(this, out bossDiedListener);
+        bossDiedListener.Register(StopLaser);
     }
 
     // Update is called once per frame
@@ -34,25 +43,38 @@ public class BossLaserGunController : MonoBehaviour
 
                 lineRenderer.SetPosition(0, laserPoint.transform.position);
 
-                if (Physics.Raycast(laserPoint.transform.position, laserPoint.transform.forward, out RaycastHit hit, 100f))
+                if (Physics.Raycast(laserPoint.transform.position, laserPoint.transform.forward, out RaycastHit hit))
+                {
                     lineRenderer.SetPosition(1, hit.point);
-                else
-                    lineRenderer.SetPosition(1, laserPoint.transform.position + (laserPoint.transform.forward * 100f));
+
+                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Players"))
+                    {
+                        hit.collider.GetComponent<Health>().TakeDamage(damage);
+                    }
+                }
             }
 
         }
     }
 
+    void StopLaser()
+    {
+        animator.Play("Laser Gun Disassemble");
+
+        foreach (GameObject laserPoint in laserPoints)
+            if (laserPoint.TryGetComponent(out LineRenderer lineRenderer))
+                Destroy(lineRenderer);
+
+        return;
+    }
+
     public void ShootLaser()
     {
         _canDrawLaser = true;
+    }
 
-        foreach (GameObject laserPoint in laserPoints)
-        {
-            if (Physics.Raycast(laserPoint.transform.position, laserPoint.transform.forward, out RaycastHit hit, LayerMask.NameToLayer("Players")))
-            {
-                // TODO: Deal damage to player
-            }
-        }
+    public void SpeedUpLaser()
+    {
+        turnSpeed += turnIncrement;
     }
 }

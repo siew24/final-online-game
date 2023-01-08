@@ -41,6 +41,8 @@ public class BaseEventListener : MonoBehaviour, IOnEventCallback
 
     public void OnEvent(EventData photonEvent)
     {
+        Debug.Log($"{baseEvent} on gameobject: {gameObject.name}");
+
         if (baseEvent.EventCode == null)
             return;
 

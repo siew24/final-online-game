@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class BossWeakPoint : MonoBehaviour
 {
-    /*
-        We utilize that this boss's gameobject is this gameobject's grandparent
-    */
 
     [SerializeField] float damage;
 
@@ -28,6 +25,13 @@ public class BossWeakPoint : MonoBehaviour
 
     public void Damage()
     {
-        transform.parent.parent.GetComponent<Health>().TakeDamage(damage);
+        GameObject currentObject = gameObject;
+        while (currentObject.transform.parent.name != "Boss")
+        {
+            if (currentObject.transform.parent.name != "Boss")
+                currentObject = currentObject.transform.parent.gameObject;
+        }
+
+        currentObject.transform.parent.GetComponent<Health>().TakeDamage(damage);
     }
 }

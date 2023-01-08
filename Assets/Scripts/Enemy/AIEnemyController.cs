@@ -144,6 +144,8 @@ public class AIEnemyController : MonoBehaviourPun
                 // Reset the shooting timer
                 shootingTimer = 0f;
                 Debug.Log("Muzzleflash");
+
+                hit.collider.GetComponent<Health>().TakeDamage(1);
             }
 
         }

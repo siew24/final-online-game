@@ -468,8 +468,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 10
-  m_BaseOffset: 10
+  m_Height: 15
+  m_BaseOffset: 15
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &2298825994323842616
@@ -647,6 +647,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2298825994621528027}
   - component: {fileID: 2298825994621528024}
+  - component: {fileID: 2461619380528241317}
   m_Layer: 0
   m_Name: HealthBarSlider
   m_TagString: Untagged
@@ -727,6 +728,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2461619380528241317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2298825994621528025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e373a6577bde942914b9d8b6d917e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4957583143600061629
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,19 +6,20 @@ using StarterAssets;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityStandardAssets.Characters.ThirdPerson.PunDemos;
 
 public class PlayerSetup : MonoBehaviourPun
 {
     [SerializeField] new Camera camera;
     [SerializeField] GameObject cameraRigs;
-    new PhotonView photonView;
+
+    void Awake()
+    {
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-
-        photonView = GetComponent<PhotonView>();
+        Debug.Log($"IsMine: {photonView.IsMine}");
 
         if (!photonView.IsMine)
         {
@@ -34,8 +35,11 @@ public class PlayerSetup : MonoBehaviourPun
             GetComponent<Interact>().enabled = false;
             GetComponent<ShoulderSwitch>().enabled = false;
             GetComponent<GameControls>().enabled = false;
+            GetComponent<Health>().healthSlider.AddComponent<HealthRotator>();
             return;
         }
+        PhotonNetwork.LocalPlayer.TagObject = gameObject;
+        GetComponent<Health>().healthSlider.gameObject.SetActive(false);
 
         OutlineEffect outlineEffect = camera.AddComponent<OutlineEffect>();
         outlineEffect.lineThickness = 1.25f;
@@ -44,6 +48,8 @@ public class PlayerSetup : MonoBehaviourPun
         outlineEffect.lineColor0 = new(255, 0, 0, 255);
         outlineEffect.lineColor1 = new(0, 255, 0, 255);
         outlineEffect.lineColor2 = new(0, 0, 255, 255);
+        outlineEffect.fillColor = new(255, 0, 0, 255);
+        outlineEffect.useFillColor = true;
     }
 
     // Update is called once per frame

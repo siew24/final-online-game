@@ -8,6 +8,7 @@ TagManager:
   - PW - Nature
   - CinemachineTarget
   - Boss Weak Point
+  - Spawn Point
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Player
   - Ignore Interact Raycast
   - Shootable
-  - 
+  - Post Process Layer
   - 
   - 
   - 

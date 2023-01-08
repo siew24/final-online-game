@@ -15,10 +15,10 @@ public class Gun : MonoBehaviour
     public int damage;
     public float timeBetweenShooting, range, reloadTime;
     public int magazineSize;
-    private int maxammoCharge = 5;
     public int currentAmmoCharge;
 
     [SerializeField] public Vector2 screenCentrePoint;
+    public OnGunAmmoChange onGunAmmoChange;
 
     private void Awake()
     {
@@ -28,6 +28,8 @@ public class Gun : MonoBehaviour
         bulletsLeft = magazineSize;
         readyToShoot = true;
         reloading = false;
+
+        onGunAmmoChange.Raise((bulletsLeft, magazineSize * currentAmmoCharge));
     }
 
     public void Input()
@@ -74,7 +76,9 @@ public class Gun : MonoBehaviour
             }
             //muzzleFlash?.Play();
             bulletsLeft--;
-            Invoke("ResetShot", timeBetweenShooting);
+            onGunAmmoChange.Raise((bulletsLeft, magazineSize * currentAmmoCharge));
+
+            Invoke(nameof(ResetShot), timeBetweenShooting);
         }
     }
 
@@ -87,7 +91,7 @@ public class Gun : MonoBehaviour
     {
         Debug.Log("Reloading");
         reloading = true;
-        Invoke("ReloadFinished", reloadTime);
+        Invoke(nameof(ReloadFinished), reloadTime);
     }
 
     void ReloadFinished()
@@ -96,6 +100,7 @@ public class Gun : MonoBehaviour
         reloading = false;
         currentAmmoCharge -= 1;
         bulletsLeft = magazineSize;
+        onGunAmmoChange.Raise((bulletsLeft, magazineSize * currentAmmoCharge));
     }
 }
 
